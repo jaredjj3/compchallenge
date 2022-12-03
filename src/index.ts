@@ -13,7 +13,7 @@ type CategoryPick = {
 
 type State = {
   selectedCategories: Category[];
-  picks: CategoryPick[]
+  picks: CategoryPick[];
 };
 
 const CATEGORIES: Category[] = [
@@ -59,6 +59,19 @@ const renderState = (state: State): void => {
   pre.innerText = JSON.stringify(state, null, 2);
 };
 
+const renderPicks = (state: State): void => {
+  const div = document.getElementById('picks')!;
+  const ul = document.createElement('ul');
+
+  for (const pick of state.picks) {
+    const li = document.createElement('li');
+    li.innerText = `${pick.name}: ${pick.picks.join(', ')}`;
+    ul.appendChild(li);
+  }
+
+  div.replaceChild(ul, div.firstChild!);
+};
+
 const shuffle = <T>(array: T[]): T[] => {
   const copy = [...array];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -84,8 +97,10 @@ export const main = () => {
     selectedCategories: [],
     picks: [],
   };
-
-  renderState(state);
+  const refresh = () => {
+    renderPicks(state);
+    renderState(state);
+  };
 
   renderCategories(CATEGORIES, (category, checked) => {
     if (checked) {
@@ -95,14 +110,16 @@ export const main = () => {
         return c.name !== category.name
       });
     }
-    renderState(state);
+    refresh();
   });
 
   const button = document.getElementById('generate')!;
   button.addEventListener('click', () => {
     state.picks = state.selectedCategories.map(getPicks);
-    renderState(state);
+    refresh();
   });
+
+  refresh();
 };
 
 main();
