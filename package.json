@@ -1,0 +1,8 @@
+{
+  "name": "compchallenge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:jaredjj3/compchallenge.git",
+  "author": "Jared Johnson <jared@jaredjohnson.dev>",
+  "license": "MIT"
+}
