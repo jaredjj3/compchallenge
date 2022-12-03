@@ -1,32 +1,25 @@
 type Category = {
   name: string;
-  maxPicks: number;
+  numPicks: number;
   choices: string[];
 };
 
 type CheckedCallback = (category: Category, checked: boolean) => void;
 
-type State = {
-  selectedCategories: Category[];
+type CategoryPick = {
+  name: string;
+  picks: string[];
 };
 
-type Foo = {
-  foo: string;
-}
-
-type Bar = {
-  foo: number;
-  bar: string;
-}
-
-type Baz = Foo & Bar;
-
-const baz: Baz = { foo: 'asdf'}
+type State = {
+  selectedCategories: Category[];
+  picks: CategoryPick[]
+};
 
 const CATEGORIES: Category[] = [
-  { name: 'foo', maxPicks: 3, choices: ['foo1', 'foo2', 'foo3'] },
-  { name: 'bar', maxPicks: 1, choices: ['bar1', 'bar2', 'bar3'] },
-  { name: 'baz', maxPicks: 2, choices: ['baz1', 'baz2', 'baz3'] },
+  { name: 'foo', numPicks: 3, choices: ['foo1', 'foo2', 'foo3', 'foo4', 'foo5'] },
+  { name: 'bar', numPicks: 1, choices: ['bar1', 'bar2', 'bar3', 'bar4', 'bar5'] },
+  { name: 'baz', numPicks: 2, choices: ['baz1', 'baz2', 'baz3', 'baz4', 'baz5'] },
 ];
 
 const CATEGORY_UL_ID = 'category-list';
@@ -66,9 +59,30 @@ const renderState = (state: State): void => {
   pre.innerText = JSON.stringify(state, null, 2);
 };
 
+const shuffle = <T>(array: T[]): T[] => {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * i);
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+};
+
+const getCategoryChoices = (category: Category): string[] => {
+  return shuffle(category.choices).slice(0, category.numPicks);
+};
+
+const getPicks = (category: Category): CategoryPick => {
+  return {
+    name: category.name,
+    picks: getCategoryChoices(category)
+  }
+};
+
 export const main = () => {
   const state: State = {
     selectedCategories: [],
+    picks: [],
   };
 
   renderState(state);
@@ -84,7 +98,11 @@ export const main = () => {
     renderState(state);
   });
 
-
+  const button = document.getElementById('generate')!;
+  button.addEventListener('click', () => {
+    state.picks = state.selectedCategories.map(getPicks);
+    renderState(state);
+  });
 };
 
 main();
