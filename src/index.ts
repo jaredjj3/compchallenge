@@ -123,11 +123,19 @@ export const main = () => {
   };
   const generate = (name?: string) => {
     if (name) {
-      const index = state.picks.findIndex((p) => p.name === name);
+
       const selection = state.selections.find((s) => s.category.name === name);
-      if (index >= 0 && selection) {
+      if (!selection) {
+        return;
+      }
+
+      const index = state.picks.findIndex((p) => p.name === name);
+      if (index < 0) {
+        state.picks.push(getPick(selection));
+      } else {
         state.picks[index] = getPick(selection);
       }
+
     } else {
       state.picks = state.selections.map(getPick);
     }
@@ -138,12 +146,16 @@ export const main = () => {
     onChecked: (category, checked) => {
       if (checked) {
         state.selections.push({ category, numPicks: category.maxPicks });
+        generate(category.name);
       } else {
         state.selections = state.selections.filter((s) => {
           return s.category.name !== category.name
         });
+        state.picks = state.picks.filter((p) => {
+          return p.name !== category.name;
+        })
+        refresh();
       }
-      generate(category.name);
     }, 
     onSliderInput: (category, value) => {
       const selection = state.selections.find((s) => s.category.name === category.name);
