@@ -1,6 +1,6 @@
 # compchallenge
 
-For a mentoring session.
+for a mentoring session
 
 ## How to run
 
